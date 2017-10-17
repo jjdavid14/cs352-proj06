@@ -1,7 +1,22 @@
+/*
+* Name:    Jamie David
+*
+* Assignment #6 - manyRecords.c
+* CSc 352 - Spring 2017
+*
+* This program stores records in form of structs
+* in a dynamically allocated array. Records are
+* read in from stdin. After entering the String
+* "END", the user will enter indices of records
+* to be printed.
+*/
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+// Struct for holding a record
 struct Record {
 	int x,y;
 	char word[32];
@@ -16,6 +31,8 @@ int main() {
 	int res, retVal = 0, sizeOfArr, countInArr = 0;
 	char end[4];
 	
+	// Allocates a buffer at start of program.
+	// Buffer is large enough for 1 record.
 	Record *arr = malloc(sizeof(Record));
 	if(arr == NULL) {
 		fprintf(stderr, "ERROR: Failed malloc!\n");
@@ -23,7 +40,9 @@ int main() {
 	}
 	sizeOfArr = 1;
 	
+	// Fill up the array with user entry
 	while(1) {
+		// If array is full, double the size
 		if(sizeOfArr == countInArr) {
 			printf("Need to extend the array; the buffer is full (with %d records)\n", countInArr);
 			sizeOfArr *= 2;
@@ -35,6 +54,8 @@ int main() {
 				fprintf(stderr, "ERROR: Failed malloc!\n");
 				exit(1);
 			}
+			// Copy the contents old array into temp
+			// and free old allocated array.
 			memcpy(temp, arr, countInArr*sizeof(Record));
 			free(arr);
 			arr = temp;
@@ -43,8 +64,10 @@ int main() {
 			printRecord(arr);
 		}
 		
+		// Push a record into the array
 		res = fillRecord(arr + countInArr);
 		if(res == 1) {
+			// Check for END keyword
 			scanf("%3s", end);
 			if(strcmp(end, "END") == 0) {
 				printf("...\"END\" found.  Will now read the indices...\n");
@@ -56,6 +79,7 @@ int main() {
 				exit(1);
 			}
 		}
+		// Keep track of records in the array
 		countInArr++;
 	}
 	
@@ -78,15 +102,28 @@ int main() {
 		}
 	}
 	
+	// Free the alloc'ed array
 	free(arr);
 	
 	return retVal;
 }
 
+/*
+ * Prints a record
+ *
+ * @param rec
+ *               - A pointer to the record
+*/
 void printRecord(Record* rec) {
 	printf("%d %d %s\n", rec->x, rec->y, rec->word);
 }
 
+/*
+ * Fills a record with data from stdin
+ *
+ * @param rec
+ *               - A pointer to the record
+*/
 int fillRecord(Record *rec) {
 	int r, tempX, tempY;
 	char tempWord[32];
